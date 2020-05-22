@@ -1,6 +1,9 @@
 #ifndef PODTHREADS_H_
 #define PODTHREADS_H_
 
+#include "cc3100_usage.h"
+#include "msp.h"
+
 /*********************************************** Pod/Client Threads *********************************************************************/
 /*
  * Thread for pod to join hub
@@ -8,7 +11,7 @@
 void JoinHub();
 
 /*
- * Thread that receives game state packets from hub
+ * Thread that receives packets from hub
  */
 void ReceiveDataFromHub();
 
@@ -17,6 +20,25 @@ void ReceiveDataFromHub();
  */
 void SendDataToHub();
 
+/*
+ * Changes the speed on the pod
+ */
+void AdjustPodSpeed();
+
+/*
+ * Stops to pod automatically in case of emergency
+ */
+void EmergencyStop();
+
+/*
+ * Gets data from ultra-sonic sensor and stores it for use in determining potential collisions
+ */
+void UltraSonicSensor();
+
+/*
+ * Gets the accelerometer data from the pod
+ */
+void Accelerometer();
 
 /*
  * End of game for the client
@@ -41,6 +63,16 @@ void SendDataToPod();
  */
 void ReceiveDataFromPod();
 
+/*
+ * Sends data to the UI for storage and for map updating
+ */
+void SendDataToUI();
+
+/*
+ * Receives data from the UI for potential user control of pods
+ */
+void RecieveDataFromUI();
+
 
 /*
  * Thread to move a single Pod
@@ -61,6 +93,14 @@ void EndOfPodConnection();
 void IdleThread();
 
 /*********************************************** Common Threads *********************************************************************/
+
+/*********************************************** Public Functions *********************************************************************/
+/*
+ * Returns either Host or Client depending on button press
+ */
+playerType GetPlayerRole();
+
+/*********************************************** Public Functions *********************************************************************/
 
 #endif /* PODTHREADS_H_ */
 

@@ -2,6 +2,8 @@
 #ifndef __DEMO_SYSCTL_H__
 #define __DEMO_SYSCTL_H__
 
+#include "stdint.h"
+
 //*****************************************************************************
 //
 // If building with a C++ compiler, make all of the definitions in this header
