@@ -9,14 +9,48 @@
 #include "demo_sysctl.h"
 #include "cc3100_usage.h"
 #include "msp432p401r.h"
+#include "podThreads.h"
+#include "G8RTOS.h"
 
-
+SpecificPodInfo_t podLink; // Structure contain essential pod data and used for wireless connection
+uint8_t podID = 0; // identification number for each pod
 /*********************************************** Pod/Client Threads *********************************************************************/
 /*
  * Thread for pod to join hub
  */
-void JoinHub(){
+void JoinHub(){ //FIXME: JoinHub currently based on connection via
+				//one static and a dynamic IP, maybe need all static for multiple embedded devices?
+	//isClient = true;
+		podLink.IP_address = getLocalIP();
+		podLink.acknowledge = true;
+		podLink.joined = true;
+		podLink.podNumber = podID; //FIXME: Make it so podID increments when a new pod is added to system
+		podLink.ready = true;
 
+		/* Sends the pod/Client's IP address to the hub/host */
+		int retval = -1;
+
+		//pinging
+		while(retval < 0 || !podLink.acknowledge){
+		    podLink.acknowledge = true;
+		    SendData((uint8_t *)&podLink, HOST_IP_ADDR, sizeof(podLink));
+		    podLink.acknowledge = false;
+		    retval = ReceiveData((uint8_t *)&podLink, sizeof(podLink));
+		}
+
+		//tell the host that I am ready to join
+	    SendData((uint8_t *)&podLink, HOST_IP_ADDR, sizeof(podLink));
+
+
+		/* Connection established, launch RTOS */
+		BITBAND_PERI(P2->DIR, 0) = 1;
+		BITBAND_PERI(P2->OUT, 0) = 1;
+
+	    G8RTOS_AddThread(ReceiveDataFromHub, 3, "ReceiveDataFromHost");//2
+	    G8RTOS_AddThread(SendDataToHub, 3, "SendDataToHost");//3
+	    G8RTOS_AddThread(IdleThread, 5, "idle");//54
+		G8RTOS_KillSelf();
+		DelayMs(1);
 }
 
 /*
@@ -75,8 +109,37 @@ void EndOfHubConnection(){
  * Thread for the hub to connect to pods
  */
 void CreateConnection(){
+	//isClient = false;
+		int retval = -1;
+		podLink.acknowledge = false;
+	    //waiting for a client to connect
+		    //Not Received  OR  not Acknowledged
+	    while(retval < 0 || !podLink.acknowledge){
+	        retval = ReceiveData((uint8_t *)&podLink, sizeof(podLink));
+	    }
 
-}
+	    //Send acknowledge to client allowing to connect
+	    podLink.acknowledge = true;
+	    SendData((uint8_t *)&podLink, podLink.IP_address, sizeof(podLink));
+	    podLink.acknowledge = false;
+
+	    //wait until the client says it has joined
+	    while(retval < 0 || !podLink.acknowledge){
+	        retval = ReceiveData((uint8_t *)&podLink, sizeof(podLink));
+	    }
+
+	    // LED indicating connection
+	    BITBAND_PERI(P2->DIR, 0) = 1;
+	    BITBAND_PERI(P2->OUT, 0) = 1;
+
+		/* Add these threads. (Need better priority definitions) */
+	    G8RTOS_AddThread(SendDataToPod, 3, "SendDataToClient");
+	    G8RTOS_AddThread(ReceiveDataFromPod, 3, "ReceiveDataFromClient");
+	    G8RTOS_AddThread(IdleThread, 5, "idle");
+		G8RTOS_KillSelf();
+		DelayMs(1);
+	}
+
 
 /*
  * Thread that sends data to a pod
@@ -128,7 +191,7 @@ void EndOfPodConnection(){
  * Idle thread
  */
 void IdleThread(){
-
+	while(1);
 }
 
 /*********************************************** Common Threads *********************************************************************/

@@ -3,6 +3,19 @@
 
 #include "cc3100_usage.h"
 #include "msp.h"
+#include "stdbool.h"
+
+/*
+ * Struct to be sent from the pod/client to the hub/host
+ */
+typedef struct
+{
+    uint32_t IP_address;
+    uint8_t podNumber;
+    bool ready;
+    bool joined;
+    bool acknowledge;
+} SpecificPodInfo_t;
 
 /*********************************************** Pod/Client Threads *********************************************************************/
 /*

@@ -29,13 +29,8 @@ void main(void){
     //G8RTOS_InitSemaphore(&USING_LED_I2C, 1);
     //G8RTOS_InitSemaphore(&USING_WIFI, 1);
 
-    //LCD_Init(false);
+    playerType Role = GetPlayerRole(); // role is either host or client
 
-    //LCD_Text(50, (MAX_SCREEN_Y >> 1) - 20, "Client is top button", LCD_BLUE);
-    //LCD_Text(50, (MAX_SCREEN_Y >> 1) + 20, "Host is right button", LCD_RED);
-
-    playerType Role = GetPlayerRole();
-    //LCD_Text(150, (MAX_SCREEN_Y >> 1) - 10, "Connecting", LCD_WHITE);
     initCC3100(Role);
 
     /* Interrupt for Host/ Hub reset */
@@ -51,10 +46,10 @@ void main(void){
 
 	//Add the appropriate starter thread for the chosen role
 	if(Role == Host){
-	    G8RTOS_AddThread(CreateConnection, 1, "genesis");
+	    G8RTOS_AddThread(CreateConnection, 1, "station launch");
 	}
 	else if(Role == Client){
-	    G8RTOS_AddThread(JoinHub, 1, "genesis");
+	    G8RTOS_AddThread(JoinHub, 1, "joining");
 	}
 
 	/* Initializes the Systick to trigger every 1ms and sets the priority for both PendSV and Systick  */
