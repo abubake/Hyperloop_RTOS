@@ -19,6 +19,7 @@
 #define MAIN_LAB5
 #ifdef MAIN_LAB5
 
+
 void main(void){
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;
 
