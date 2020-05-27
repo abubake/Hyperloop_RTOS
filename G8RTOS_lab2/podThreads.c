@@ -6,9 +6,9 @@
  */
 
 
-#include "demo_sysctl.h"
+#include "demo_sysctl.h" // for using the delayMs function
 #include "cc3100_usage.h"
-#include "msp432p401r.h"
+#include "msp.h"
 #include "podThreads.h"
 #include "G8RTOS.h"
 

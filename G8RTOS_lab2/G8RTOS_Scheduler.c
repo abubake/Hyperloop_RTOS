@@ -5,9 +5,8 @@
 /*********************************************** Dependencies and Externs *************************************************************/
 #include <stdint.h>
 #include "msp.h"
-#include <BSP.h>
-#include <hyperloop-iot/G8RTOS_lab2/G8RTOS.h>
-#include <hyperloop-iot/G8RTOS_lab2/G8RTOS_Structures.h>
+#include "G8RTOS.h"
+#include "G8RTOS_Structures.h"
 
 extern void PendSV_Handler();
 extern int32_t StartCriticalSection();
@@ -96,7 +95,7 @@ void G8RTOS_Scheduler()
    uint32_t lcm = getLCM();
     if(lcm || NumberOfPeriodics){
         uint32_t counter = (SystemTime) % lcm;
-        for(uint8_t i=0; i<NumberOfPeriodics; i++){
+        for(int i=0; i<NumberOfPeriodics; i++){
             if((counter % periodicControlBlocks[i].period) == periodicControlBlocks[i].exec_time){
                 periodicControlBlocks[i].handler();
             }
@@ -107,7 +106,7 @@ void G8RTOS_Scheduler()
     tcb_t* ptr = CurrentlyRunningThread;
     //tcb_t* end = CurrentlyRunningThread;
 
-    for(uint8_t i = 0; i < NumberOfThreads; i++){
+    for(int i = 0; i < NumberOfThreads; i++){
         if(ptr->asleep){
             if(SystemTime != 0 && SystemTime % (ptr->sleep_cnt-1) == 0){
                 ptr->asleep = 0;
@@ -125,7 +124,7 @@ void G8RTOS_Scheduler()
     }
 
     currentMaxPriortity = 256;
-    for(uint8_t i = 0; i < NumberOfThreads; i++){
+    for(int i = 0; i < NumberOfThreads; i++){
          if(ptr->isAlive && !ptr->asleep && !ptr->blocked){
              if(ptr->priority < currentMaxPriortity){
                  threadToRun = ptr;
@@ -211,7 +210,7 @@ void G8RTOS_Init()
     NumberOfThreads = 0;
     NumberOfPeriodics = 0;
     //init hardware on board
-    BSP_InitBoard();
+    //BSP_InitBoard();
     //relocate interrupt vector table
     uint32_t newVTORTable = 0x20000000;
     memcpy((uint32_t*)newVTORTable,(uint32_t*)SCB->VTOR,57*4);
@@ -302,7 +301,7 @@ sched_ErrCode_t G8RTOS_AddThread(void (*threadToAdd)(void), uint8_t priority, ch
             threadControlBlocks[threadIndex].isAlive = true;
             threadControlBlocks[threadIndex].threadID = ((IDCounter++) << 16) | threadIndex;
 
-            for(uint8_t i = 0; i < MAX_NAME_LENGTH; i++){
+            for(int i = 0; i < MAX_NAME_LENGTH; i++){
             threadControlBlocks[threadIndex].threadName[i] = name[i];
             }
 
@@ -446,7 +445,7 @@ sched_ErrCode_t G8RTOS_KillAllOthers(){
     threadId_t curThread = G8RTOS_GetThreadId();
 
     //Iterate through all other threads, looking for living threads with different IDs
-    for(uint16_t i = 0; i < MAX_THREADS; i++){
+    for(int i = 0; i < MAX_THREADS; i++){
         //If alive and has different ID, kill
         if((threadControlBlocks[i].threadID != curThread) && threadControlBlocks[i].isAlive){
             //Kill that thread

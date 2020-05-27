@@ -1,20 +1,10 @@
 #include "msp.h"
-#include <driverlib.h>
-#include "core_cm4.h"
 #include "G8RTOS.h"
 #include "podThreads.h"
-
-#include "time.h"
 #include "stdlib.h"
-
 #include "cc3100_usage.h"
 #include "sl_common.h"
-
 #include "G8RTOS_Scheduler.h"
-#include "demo_sysctl.h"
-
-#include <DriverLib.h>
-#include "BSP.h"
 
 #define MAIN_LAB5
 #ifdef MAIN_LAB5
@@ -41,9 +31,6 @@ void main(void){
     P1IES |= BIT4; //enables low to high transition
     P1REN |= BIT4; // pull up resistor
     P1OUT |= BIT4; // sets resistor to pull up
-
-	/* For the color randomness */
-	srand(time(NULL));
 
 	//Add the appropriate starter thread for the chosen role
 	if(Role == Host){
