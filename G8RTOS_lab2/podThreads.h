@@ -113,6 +113,11 @@ void IdleThread();
  */
 playerType GetPlayerRole();
 
+/*
+ * delay milliseconds when system clock is at 3 MHz
+ */
+void DelayMs(int n);
+
 /*********************************************** Public Functions *********************************************************************/
 
 #endif /* PODTHREADS_H_ */

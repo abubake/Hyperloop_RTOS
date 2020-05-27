@@ -36,7 +36,7 @@
 
 #include "simplelink.h"
 #include "board.h"
-#include "driverlib.h"
+#include <DriverLib.h>
 
 #define XT1_XT2_PORT_SEL0            PJSEL0
 #define XT1_XT2_PORT_SEL1            PJSEL1

@@ -13,9 +13,9 @@
 void main(void){
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;
 
-    G8RTOS_Init();
+    G8RTOS_Init(); /* Sets needed variables and hardware */
 
-    /* Sets up a semaphore for indicating if the LED resource and the sensor resource are available */
+    /* Sets up a semaphores for controlling resource use */
     //G8RTOS_InitSemaphore(&USING_SPI, 1);
     //G8RTOS_InitSemaphore(&USING_LED_I2C, 1);
     //G8RTOS_InitSemaphore(&USING_WIFI, 1);

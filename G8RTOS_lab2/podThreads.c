@@ -6,7 +6,7 @@
  */
 
 
-#include "demo_sysctl.h" // for using the delayMs function
+//#include "demo_sysctl.h" // for using the delayMs function
 #include "cc3100_usage.h"
 #include "msp.h"
 #include "podThreads.h"
@@ -50,7 +50,7 @@ void JoinHub(){ //FIXME: JoinHub currently based on connection via
 	    G8RTOS_AddThread(SendDataToHub, 3, "SendDataToHost");//3
 	    G8RTOS_AddThread(IdleThread, 5, "idle");//54
 		G8RTOS_KillSelf();
-		DelayMs(1);
+		DelayMs(1); //FIXME: Get a new delay function
 }
 
 /*
@@ -223,5 +223,12 @@ playerType GetPlayerRole(){
 	            }
 	        }
 	    }
+}
+
+/* delay milliseconds when system clock is at 3 MHz */
+void DelayMs(int n) {
+
+    for (int j = 0; j < n; j++)
+        for (int i = 750; i > 0; i--);      /* Delay */
 }
 /*********************************************** Public Functions *********************************************************************/

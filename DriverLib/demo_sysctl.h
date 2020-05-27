@@ -2,8 +2,7 @@
 #ifndef __DEMO_SYSCTL_H__
 #define __DEMO_SYSCTL_H__
 
-#include "stdint.h"
-
+#include <stdint.h>
 //*****************************************************************************
 //
 // If building with a C++ compiler, make all of the definitions in this header
@@ -15,7 +14,7 @@ extern "C"
 {
 #endif
 
-// #define DelayMs(ulClockMS) {SysCtlDelay((ulClockMS/2)*(CS_getMCLK() / (3 * 1000)));}
+//#define DelayMs(ulClockMS) {SysCtlDelay((ulClockMS/2)*(CS_getMCLK() / (3 * 1000)));}
 extern void DelayMs (uint32_t ulClockMS);
 //*****************************************************************************
 //
