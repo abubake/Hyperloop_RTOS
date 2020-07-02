@@ -11,6 +11,7 @@
 #include "msp.h"
 #include "podThreads.h"
 #include "G8RTOS.h"
+#include "driverlib.h"
 
 SpecificPodInfo_t podLink; // Structure contain essential pod data and used for wireless connection
 uint8_t podID = 0; // identification number for each pod
@@ -42,7 +43,7 @@ void JoinHub(){ //FIXME: JoinHub currently based on connection via
 	    SendData((uint8_t *)&podLink, HOST_IP_ADDR, sizeof(podLink));
 
 
-		/* Connection established, launch RTOS */
+		/* Connection established, launch RTOS (Turns on red LED to indicate connection */
 		BITBAND_PERI(P2->DIR, 0) = 1;
 		BITBAND_PERI(P2->OUT, 0) = 1;
 
@@ -50,14 +51,28 @@ void JoinHub(){ //FIXME: JoinHub currently based on connection via
 	    G8RTOS_AddThread(SendDataToHub, 3, "SendDataToHost");//3
 	    G8RTOS_AddThread(IdleThread, 5, "idle");//54
 		G8RTOS_KillSelf();
-		DelayMs(1); //FIXME: Get a new delay function
+		DelayMs(1);
+
 }
 
 /*
  * Thread that receives needed info from hub
  */
 void ReceiveDataFromHub(){
+	/*
+	• Continually receive data until a return value greater than zero is returned (meaning valid data has been read)
+	o Note: Remember to release and take the semaphore again so you’re still able to send data
+	o Sleeping here for 1ms would avoid a deadlock
+	*/
+while(1){
+	G8RTOS_WaitSemaphore(&USING_WIFI);
+	//G8RTOS_WaitSemaphore(&USING_SPI);
+    ReceiveData((uint8_t *)&podLink, sizeof(podLink));
+	G8RTOS_SignalSemaphore(&USING_WIFI);
+	//G8RTOS_SignalSemaphore(&USING_SPI);
 
+		sleep(1);
+}
 }
 
 /*

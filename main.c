@@ -4,7 +4,7 @@
 #include "stdlib.h"
 #include "cc3100_usage.h"
 #include "sl_common.h"
-#include "G8RTOS_Scheduler.h"
+#include "G8RTOS.h"
 
 #define MAIN_LAB5
 #ifdef MAIN_LAB5
@@ -18,7 +18,7 @@ void main(void){
     /* Sets up a semaphores for controlling resource use */
     //G8RTOS_InitSemaphore(&USING_SPI, 1);
     //G8RTOS_InitSemaphore(&USING_LED_I2C, 1);
-    //G8RTOS_InitSemaphore(&USING_WIFI, 1);
+    G8RTOS_InitSemaphore(&USING_WIFI, 1);
 
     playerType Role = GetPlayerRole(); // role is either host or client
 

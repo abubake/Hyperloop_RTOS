@@ -4,6 +4,7 @@
 #include "cc3100_usage.h"
 #include "msp.h"
 #include "stdbool.h"
+#include "G8RTOS.h"
 
 /*
  * Struct to be sent from the pod/client to the hub/host
@@ -16,6 +17,11 @@ typedef struct
     bool joined;
     bool acknowledge;
 } SpecificPodInfo_t;
+
+/*
+ * Semaphores
+ */
+semaphore_t USING_WIFI;
 
 /*********************************************** Pod/Client Threads *********************************************************************/
 /*
