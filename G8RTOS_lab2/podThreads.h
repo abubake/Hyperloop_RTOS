@@ -6,6 +6,9 @@
 #include "stdbool.h"
 #include "G8RTOS.h"
 
+/*********************************************** Data Structures ********************************************************************/
+
+#pragma pack ( push, 1)
 /*
  * Struct to be sent from the pod/client to the hub/host
  */
@@ -17,6 +20,26 @@ typedef struct
     bool joined;
     bool acknowledge;
 } SpecificPodInfo_t;
+
+/*
+ * Struct to be sent from the host to the client
+ */
+typedef struct
+{
+    //SpecificPlayerInfo_t player;
+    //GeneralPlayerInfo_t players[MAX_NUM_OF_PLAYERS];
+    //balls_t balls[MAX_NUM_OF_BALLS];                     //Nick changed Ball_t to balls_t
+    //uint16_t numberOfBalls;
+    //bool winner;
+    //bool gameDone;
+    //uint8_t LEDScores[2];
+    //uint8_t overallScores[2];
+	uint8_t stopPod;
+} PodControls_t;
+
+#pragma pack ( pop )
+
+/*********************************************** Data Structures ********************************************************************/
 
 /*
  * Semaphores
@@ -86,6 +109,7 @@ void ReceiveDataFromPod();
  * Sends data to the UI for storage and for map updating
  */
 void SendDataToUI();
+
 
 /*
  * Receives data from the UI for potential user control of pods

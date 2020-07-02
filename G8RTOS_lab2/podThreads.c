@@ -13,7 +13,8 @@
 #include "G8RTOS.h"
 #include "driverlib.h"
 
-SpecificPodInfo_t podLink; // Structure contain essential pod data and used for wireless connection
+PodControls_t podCommand; // Struct containing control data sent from the hub
+SpecificPodInfo_t podLink; // Struct contain essential pod data and used for wireless connection (pod to hub)
 uint8_t podID = 0; // identification number for each pod
 /*********************************************** Pod/Client Threads *********************************************************************/
 /*
@@ -64,57 +65,62 @@ void ReceiveDataFromHub(){
 	o Note: Remember to release and take the semaphore again so you’re still able to send data
 	o Sleeping here for 1ms would avoid a deadlock
 	*/
-while(1){
-	G8RTOS_WaitSemaphore(&USING_WIFI);
-	//G8RTOS_WaitSemaphore(&USING_SPI);
-    ReceiveData((uint8_t *)&podLink, sizeof(podLink));
-	G8RTOS_SignalSemaphore(&USING_WIFI);
-	//G8RTOS_SignalSemaphore(&USING_SPI);
-
-		sleep(1);
-}
+	while(1){
+		G8RTOS_WaitSemaphore(&USING_WIFI);
+		//G8RTOS_WaitSemaphore(&USING_SPI);
+		ReceiveData((uint8_t *)&podCommand, sizeof(podCommand));
+		G8RTOS_SignalSemaphore(&USING_WIFI);
+		//G8RTOS_SignalSemaphore(&USING_SPI);
+		sleep(1); // may need to change this
+	}
 }
 
 /*
  * Thread that sends UDP packets to hub
  */
 void SendDataToHub(){
-
+	while(1){
+		//send data to host and sleep (need to fill in parameters of function (from cc3100_usage.h))
+		G8RTOS_WaitSemaphore(&USING_WIFI);
+		SendData((uint8_t *)&podLink, HOST_IP_ADDR, sizeof(podLink));
+		G8RTOS_SignalSemaphore(&USING_WIFI);
+		sleep(2);
+	}
 }
 
 /*
  * Changes the speed on the pod
  */
 void AdjustPodSpeed(){
-
+	//FIXME: write this thread
 }
 
 /*
  * Stops to pod automatically in case of emergency
  */
 void EmergencyStop(){
-
+	//FIXME: write this thread
 }
 
 /*
  * Gets data from ultra-sonic sensor and stores it for use in determining potential collisions
  */
 void UltraSonicSensor(){
-
+	//FIXME: write this thread
 }
 
 /*
  * Gets the accelerometer data from the pod
  */
 void Accelerometer(){
-
+	//FIXME: write this thread
 }
 
 /*
  * End of game for the client
  */
 void EndOfHubConnection(){
-
+	//FIXME: write this thread
 }
 
 /*********************************************** Pod/Client Threads *********************************************************************/
@@ -160,14 +166,39 @@ void CreateConnection(){
  * Thread that sends data to a pod
  */
 void SendDataToPod(){
+	while(1){
+		/*
+		• Fill packet for client
+		• Send packet
+		• Check if game is done
+		o If done, Add EndOfGameHost thread with highest priority
+		• Sleep for 5ms (found experimentally to be a good amount of time for synchronization)
+		*/
+		G8RTOS_WaitSemaphore(&USING_WIFI);
+		SendData((uint8_t *)&podCommand, podLink.IP_address, sizeof(podCommand));
+		G8RTOS_SignalSemaphore(&USING_WIFI);
+		sleep(5);
 
+		    }
 }
 
 /*
  * Thread that receives UDP packets from pod
  */
 void ReceiveDataFromPod(){
-
+	while(1){
+	/*
+	• Continually receive data until a return value greater than zero is returned (meaning valid data has been read)
+    o Note: Remember to release and take the semaphore again so you’re still able to send data
+	o Sleeping here for 1ms would avoid a deadlock
+	*/
+		G8RTOS_WaitSemaphore(&USING_WIFI);
+	    //G8RTOS_WaitSemaphore(&USING_SPI);
+	    ReceiveData((uint8_t *)&podLink, sizeof(podLink));
+	    G8RTOS_SignalSemaphore(&USING_WIFI);
+	    //G8RTOS_SignalSemaphore(&USING_SPI);
+	    sleep(1);
+	}
 }
 
 /*
@@ -239,7 +270,6 @@ playerType GetPlayerRole(){
 	        }
 	    }
 }
-
 /* delay milliseconds when system clock is at 3 MHz */
 void DelayMs(int n) {
 

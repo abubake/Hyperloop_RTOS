@@ -16,8 +16,6 @@ void main(void){
     G8RTOS_Init(); /* Sets needed variables and hardware */
 
     /* Sets up a semaphores for controlling resource use */
-    //G8RTOS_InitSemaphore(&USING_SPI, 1);
-    //G8RTOS_InitSemaphore(&USING_LED_I2C, 1);
     G8RTOS_InitSemaphore(&USING_WIFI, 1);
 
     playerType Role = GetPlayerRole(); // role is either host or client
